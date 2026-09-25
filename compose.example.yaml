@@ -1,0 +1,13 @@
+services:
+  unlock:
+    image: ghcr.io/OWNER/truenas-tang-unlock@sha256:DIGEST
+    restart: unless-stopped
+    # Loopback reaches the TrueNAS API without crossing any network; the LAN
+    # reaches tang.
+    network_mode: host
+    environment:
+      DATASETS: tank/media tank/private
+      TRUENAS_API_KEY_FILE: /config/api_key
+      INTERVAL: "60"
+    volumes:
+      - /mnt/tank/.tang-unlock:/config:ro
