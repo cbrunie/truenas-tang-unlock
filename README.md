@@ -51,7 +51,7 @@ unencrypted pool root.
    ```sh
    thp=$(ssh tang-host tang-show-keys 7500)   # the tang signing key thumbprint
    printf %s "$PASSPHRASE" | docker run --rm -i --entrypoint clevis \
-     ghcr.io/OWNER/truenas-tang-unlock encrypt tang \
+     ghcr.io/cbrunie/truenas-tang-unlock encrypt tang \
      "{\"url\":\"http://192.168.1.10:7500\",\"thp\":\"$thp\"}" > passphrase.jwe
    ```
 

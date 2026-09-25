@@ -1,6 +1,6 @@
 services:
   unlock:
-    image: ghcr.io/OWNER/truenas-tang-unlock@sha256:DIGEST
+    image: ghcr.io/cbrunie/truenas-tang-unlock@sha256:DIGEST
     restart: unless-stopped
     # Loopback reaches the TrueNAS API without crossing any network; the LAN
     # reaches tang.
