@@ -57,9 +57,12 @@ unencrypted pool root.
 
    Give the tang URL as the NAS will see it at boot.
 
-3. **Put `passphrase.jwe` and `api_key`** in a directory on the unencrypted
-   root, readable by UID 65534, and install the app from
-   [`compose.example.yaml`](compose.example.yaml) as a TrueNAS custom app.
+3. **Install the app** from [`compose.example.yaml`](compose.example.yaml) as a
+   TrueNAS custom app. Pass the blob and key inline (`JWE`, `TRUENAS_API_KEY`),
+   or as files on the unencrypted root readable by UID 65534 (`JWE_FILE`,
+   `TRUENAS_API_KEY_FILE`). Inline, they sit in the app config on the
+   unencrypted root, like files would: the blob is useless without tang, and
+   the key is limited to `DATASET_WRITE`.
 
 ## Threat model
 

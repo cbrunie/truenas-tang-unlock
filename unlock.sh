@@ -9,7 +9,7 @@ set -eu
 
 : "${DATASETS:?space-separated list of datasets to unlock}"
 : "${TRUENAS_URL:=https://127.0.0.1}"
-: "${JWE_FILE:=/config/passphrase.jwe}"
+: "${JWE_FILE:=/config/passphrase.jwe}"   # or the blob itself in JWE
 : "${INTERVAL:=60}"
 
 if [ -n "${TRUENAS_API_KEY_FILE:-}" ]; then
@@ -22,6 +22,13 @@ AUTH=$(mktemp)
 chmod 600 "$AUTH"
 printf 'Authorization: Bearer %s\n' "$TRUENAS_API_KEY" > "$AUTH"
 unset TRUENAS_API_KEY
+
+# The sealed blob is not a secret on its own (useless without tang), so it may
+# come inline, which spares writing files on the NAS.
+decrypt() {
+    if [ -n "${JWE:-}" ]; then printf %s "$JWE" | clevis decrypt
+    else clevis decrypt < "$JWE_FILE"; fi
+}
 
 log() { echo "$(date -Iseconds) $*"; }
 
@@ -74,7 +81,7 @@ while :; do
         if is_locked "$ds"; then todo="$todo $ds"; fi
     done
     if [ -n "$todo" ]; then
-        if phrase=$(clevis decrypt < "$JWE_FILE"); then
+        if phrase=$(decrypt); then
             for ds in $todo; do unlock "$ds" "$phrase"; done
         else
             log "clevis decrypt failed (tang unreachable?), will retry"

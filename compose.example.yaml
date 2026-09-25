@@ -7,7 +7,6 @@ services:
     network_mode: host
     environment:
       DATASETS: tank/media tank/private
-      TRUENAS_API_KEY_FILE: /config/api_key
       INTERVAL: "60"
-    volumes:
-      - /mnt/tank/.tang-unlock:/config:ro
+      TRUENAS_API_KEY: "1-..."
+      JWE: "eyJhbGciOiJFQ0RILUVT..."
