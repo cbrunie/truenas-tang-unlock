@@ -18,11 +18,13 @@ a container, and the unlock goes through the TrueNAS API.
 
 Every `INTERVAL` seconds, the app checks the listed datasets. If one is locked,
 it runs `clevis decrypt` on the blob (which only works if the tang server
-answers), then calls `pool.dataset.unlock`. TrueNAS then restarts whatever
+answers), then calls `pool.dataset.unlock` over the WebSocket API. The REST API
+won't do: on TrueNAS 25.10 it answers 403 to any key that is not full admin,
+whatever its privileges. TrueNAS then restarts whatever
 depends on the dataset: shares, apps.
 
-The passphrase is never passed as an argument or an environment variable. It
-goes from `clevis decrypt` to `jq` to `curl` through pipes.
+The passphrase is never passed as an argument or an environment variable:
+clevis reads the blob on stdin and writes the passphrase on stdout.
 
 ## Layout
 
@@ -80,7 +82,7 @@ unencrypted pool root.
 
 - A dataset you lock by hand is unlocked again on the next round. Stop the app
   to keep it locked.
-- The API is reached over loopback with `-k` (self-signed certificate). To
-  reach it elsewhere, set `CURL_CA_BUNDLE`.
-- Tested on TrueNAS 25.10, whose REST API is deprecated in favour of the
-  WebSocket API.
+- The API is reached over loopback without checking the self-signed
+  certificate. To reach it elsewhere, set `TRUENAS_URL`
+  (`wss://host/api/current`) and `TRUENAS_CA`.
+- Tested on TrueNAS 25.10.
